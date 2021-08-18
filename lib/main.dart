@@ -6,6 +6,7 @@ import 'package:yellow_class_assignment/screens/add_or_edit_movie.dart';
 import 'package:yellow_class_assignment/screens/movies_display_screen.dart';
 import 'package:yellow_class_assignment/storage/movie_store.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
+import 'package:yellow_class_assignment/widgets/infinite_scroll_view_movies.dart';
 
 import 'model/movie.dart';
 
@@ -40,6 +41,8 @@ const FlexSchemeData customFlexScheme = FlexSchemeData(
   ),
 );
 
+String appTitle = 'BingAao';
+
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -62,32 +65,20 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
+
+
 class _MyHomePageState extends State<MyHomePage> {
+
+  refresh(){
+    setState(() {
+
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
-      appBar: AppBar(
-        title: Text(
-          widget.title,
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          AddOrEditNewMovie(title: 'Add new movie')));
-            },
-            icon: Icon(Icons.playlist_add),
-            color: Colors.white,
-            iconSize: 30.0,
-          )
-        ],
-      ),
       body: MovieDisplayScreen(),
     );
   }
@@ -100,8 +91,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void deactivate() {
     super.deactivate();
-
-
   }
 
   @override

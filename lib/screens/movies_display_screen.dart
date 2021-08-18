@@ -27,36 +27,46 @@ class _MovieDisplayScreenState extends State<MovieDisplayScreen> {
       builder: (context, Box<Movie> items, _) {
         List<int> keys = items.keys.cast<int>().toList();
         if (items.values.isEmpty)
-          return Container(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'No movies added',
-                    style: TextStyle(color: Colors.grey.shade400),
-                  ),
-                  SizedBox(
-                    height: 5.0,
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  AddOrEditNewMovie(
-                                    title: 'Add new movie',
-                                  )));
-                    },
-                    child: Text(
-                      'Add a new movie',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                      ),
+          return Scaffold(
+            backgroundColor: Theme.of(context).primaryColor,
+            appBar: AppBar(
+              title: Text(
+                appTitle,
+                style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+              ),
+            ),
+            body: Container(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'No movies added',
+                      style: TextStyle(color: Colors.grey.shade400),
                     ),
-                  )
-                ],
+                    SizedBox(
+                      height: 5.0,
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    AddOrEditNewMovie(
+                                      title: 'Add new movie',
+                                      getMovies: refresh,
+                                    )));
+                      },
+                      child: Text(
+                        'Add a new movie',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           );

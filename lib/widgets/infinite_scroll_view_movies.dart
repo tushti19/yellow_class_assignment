@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:yellow_class_assignment/main.dart';
 import 'package:yellow_class_assignment/model/movie.dart';
+import 'package:yellow_class_assignment/screens/add_or_edit_movie.dart';
 
 import 'movie_tile.dart';
 
@@ -18,9 +20,9 @@ class InfiniteScrollViewMovies extends StatefulWidget {
       _InfiniteScrollViewMoviesState();
 }
 
-final ScrollController scrollController = ScrollController();
 
 class _InfiniteScrollViewMoviesState extends State<InfiniteScrollViewMovies> {
+  final ScrollController scrollController = ScrollController();
   List<Movie?> movieItems = [];
   bool loading = false;
   bool allLoaded = false;
@@ -39,7 +41,7 @@ class _InfiniteScrollViewMoviesState extends State<InfiniteScrollViewMovies> {
     setState(() {
       loading = true;
     });
-    await Future.delayed(Duration(milliseconds: 600));
+    await Future.delayed(Duration(milliseconds: 1000));
     if (movieItems.length == widget.moviesInStore.length) {
       setState(() {
         loading = false;
@@ -56,14 +58,14 @@ class _InfiniteScrollViewMoviesState extends State<InfiniteScrollViewMovies> {
       });
       return;
     } else {
-      if (widget.moviesInStore.length < 10) {
+      if (widget.moviesInStore.length < 5) {
         movieItems = [];
         for (var movie in widget.moviesInStore.values) {
           movieItems.add(movie);
         }
       } else {
         List<Movie?> newList = [];
-        for (int index = 0; index <= 10; index++) {
+        for (int index = 0; index <= 4; index++) {
           if (index + movieItems.length >= widget.moviesInStore.length) break;
           newList.add(widget.moviesInStore.getAt(index + movieItems.length));
         }
@@ -81,45 +83,68 @@ class _InfiniteScrollViewMoviesState extends State<InfiniteScrollViewMovies> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: Stack(
-        children: [
-          ListView.separated(
-            separatorBuilder: (context, index) {
-              return Divider();
+    return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
+      appBar: AppBar(
+        title: Text(
+          appTitle,
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) =>
+                          AddOrEditNewMovie(title: 'Add new movie' , getMovies: getEditedMovies,)));
             },
-            itemCount: movieItems.length,
-            shrinkWrap: true,
-            scrollDirection: Axis.vertical,
-            controller: scrollController,
-            itemBuilder: (_, index) {
-              final Movie? data = movieItems[index];
-              return MovieTile(
-                currentMovie: data!,
-                index: index,
-                getEditMovies: getEditedMovies,
-              );
-            },
-          ),
-          if (loading) ...[
-            Positioned(
-              left: MediaQuery.of(context).size.width*0.5 - 40,
-              bottom: 0,
-              child: Center(
-                child: Container(
+            icon: Icon(Icons.playlist_add),
+            color: Colors.white,
+            iconSize: 30.0,
+          )
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Stack(
+          children: [
+            ListView.separated(
+              separatorBuilder: (context, index) {
+                return Divider();
+              },
+              itemCount: movieItems.length,
+              shrinkWrap: true,
+              scrollDirection: Axis.vertical,
+              controller: scrollController,
+              itemBuilder: (_, index) {
+                final Movie? data = movieItems[index];
+                return MovieTile(
+                  currentMovie: data!,
+                  index: index,
+                  getEditMovies: getEditedMovies,
+                );
+              },
+            ),
+            if (loading) ...[
+              Positioned(
+                left: MediaQuery.of(context).size.width*0.5 - 40,
+                bottom: 0,
+                child: Center(
                   child: Container(
-                    height: 40.0,
-                    width: 40.0,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
+                    child: Container(
+                      height: 40.0,
+                      width: 40.0,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ]
-        ],
+            ]
+          ],
+        ),
       ),
     );
   }
@@ -129,7 +154,6 @@ class _InfiniteScrollViewMoviesState extends State<InfiniteScrollViewMovies> {
     super.initState();
     getTenMoviesAtATime();
     scrollController.addListener(() {
-      print(scrollController.position);
       if (scrollController.position.pixels >=
               scrollController.position.maxScrollExtent &&
           !loading) getTenMoviesAtATime();
@@ -145,6 +169,5 @@ class _InfiniteScrollViewMoviesState extends State<InfiniteScrollViewMovies> {
   @override
   void dispose() {
     super.dispose();
-    scrollController.dispose();
   }
 }

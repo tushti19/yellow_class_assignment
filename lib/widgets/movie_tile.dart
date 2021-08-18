@@ -92,11 +92,6 @@ class _MovieTileState extends State<MovieTile> {
                                     Navigator.pop(context);
                                     final snackBar = SnackBar(content: Text('Deleted!' , style: TextStyle(color: Colors.white),) , duration: Duration(milliseconds: 3000),);
                                     widget.getEditMovies();
-                                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                                    scrollController.animateTo(
-                                        scrollController.position.minScrollExtent,
-                                        duration: const Duration(milliseconds: 500),
-                                        curve: Curves.easeOut);
                                   },
                                   child: Text(
                                     'Delete',

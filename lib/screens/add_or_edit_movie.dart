@@ -18,8 +18,8 @@ import '../main.dart';
 class AddOrEditNewMovie extends StatefulWidget {
   final String title;
   final int index;
-  final Function()? getMovies;
-  const AddOrEditNewMovie({Key? key, required this.title, this.index = 0 , this.getMovies})
+  final Function() getMovies;
+  const AddOrEditNewMovie({Key? key, required this.title, this.index = 0 , required this.getMovies})
       : super(key: key);
 
   @override
@@ -77,10 +77,6 @@ class _AddOrEditNewMovieState extends State<AddOrEditNewMovie> {
             }
             else
               Navigator.pop(context);
-            scrollController.animateTo(
-                scrollController.position.minScrollExtent,
-                duration: const Duration(milliseconds: 500),
-                curve: Curves.easeOut);
           },
           icon: Icon(
             Icons.keyboard_arrow_left,
@@ -106,6 +102,11 @@ class _AddOrEditNewMovieState extends State<AddOrEditNewMovie> {
                         _formKey.currentState!.value['Director'],
                         newPath.toString());
                     dataBox.add(movie);
+                    showSave = false;
+                    Navigator.pop(context);
+                    final snackBar = SnackBar(content: Text('Changes Saved!' , style: TextStyle(color: Colors.white),) , duration: Duration(milliseconds: 3000),);
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    widget.getMovies();
                 }
                 else {
                     print(_formKey.currentState!.value);
@@ -132,16 +133,12 @@ class _AddOrEditNewMovieState extends State<AddOrEditNewMovie> {
                           dataBox.getAt(widget.index).moviePosterImage);
                       dataBox.putAt(widget.index , movie);
                     }
+                    showSave = false;
+                    Navigator.pop(context);
+                    final snackBar = SnackBar(content: Text('Changes Saved!' , style: TextStyle(color: Colors.white),) , duration: Duration(milliseconds: 3000),);
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    widget.getMovies();
                   }
-                showSave = false;
-                Navigator.pop(context);
-                final snackBar = SnackBar(content: Text('Changes Saved!' , style: TextStyle(color: Colors.white),) , duration: Duration(milliseconds: 3000),);
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                scrollController.animateTo(
-                    scrollController.position.minScrollExtent,
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.easeOut);
-                widget.getMovies!();
                 }
                 else{
                   final snackBar = SnackBar(content: Text('All fields are required' , style: TextStyle(color: Colors.white),) , duration: Duration(milliseconds: 3000),);
