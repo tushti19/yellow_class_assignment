@@ -8,6 +8,7 @@ import 'package:yellow_class_assignment/storage/movie_store.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 
 import 'model/movie.dart';
+
 const String dataBoxName = "movie box";
 var dataBox;
 
@@ -15,19 +16,18 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final directory = await getApplicationDocumentsDirectory();
   Hive.init(directory.path);
-  Hive.registerAdapter<Movie> (MovieAdapter());
+  Hive.registerAdapter<Movie>(MovieAdapter());
   dataBox = await Hive.openBox<Movie>(dataBoxName);
   runApp(MyApp());
 }
-
 
 const FlexSchemeData customFlexScheme = FlexSchemeData(
   name: 'App Theme',
   description: 'Purple theme created from custom defined colors.',
   light: FlexSchemeColor(
-    primary: Color(0xFF8A4FFF),
+    primary: Color(0xFF041E42),
     primaryVariant: Color(0xFF383285),
-    secondary: Color(0xFFC3BEF7),
+    secondary: Color(0xFFAFEADC),
     secondaryVariant: Color(0xFF8980EF),
     accentColor: Color(0xFFEFFFFA),
     error: Colors.redAccent,
@@ -39,7 +39,6 @@ const FlexSchemeData customFlexScheme = FlexSchemeData(
     secondaryVariant: Color(0xFF5C7267),
   ),
 );
-
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -65,21 +64,31 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
-        title: Text(widget.title , style: GoogleFonts.poppins(),),
-        centerTitle: true,
+        title: Text(
+          widget.title,
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) =>
+                          AddOrEditNewMovie(title: 'Add new movie')));
+            },
+            icon: Icon(Icons.playlist_add),
+            color: Colors.white,
+            iconSize: 30.0,
+          )
+        ],
       ),
       body: MovieDisplayScreen(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => AddOrEditNewMovie(title: 'Add new movie')));
-        },
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 
@@ -87,6 +96,16 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
   }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+
+
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 }
-
-

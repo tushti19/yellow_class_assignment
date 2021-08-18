@@ -8,13 +8,13 @@ import 'package:yellow_class_assignment/model/movie.dart';
 import 'package:yellow_class_assignment/screens/add_or_edit_movie.dart';
 
 import '../main.dart';
+import 'infinite_scroll_view_movies.dart';
 
 class MovieTile extends StatefulWidget {
   final Movie currentMovie;
-  const MovieTile(
-      {Key? key,
-      required this.currentMovie})
-      : super(key: key);
+  final int index ;
+  final Function() getEditMovies;
+  const MovieTile({Key? key, required this.currentMovie , required this.index , required this.getEditMovies}) : super(key: key);
 
   @override
   _MovieTileState createState() => _MovieTileState();
@@ -35,65 +35,104 @@ class _MovieTileState extends State<MovieTile> {
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10.0),
-                color: Color(0xFFC3BEF7).withOpacity(0.4),
+                color: Color(0xFF394e64),
               ),
               width: MediaQuery.of(context).size.width,
               height: 150.0,
               child: Padding(
-                padding: const EdgeInsets.only(left: 150.0, top: 10.0),
-                child: Column(
+                padding: const EdgeInsets.only(left: 140.0, top: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      widget.currentMovie.movieName,
-                      style: GoogleFonts.poppins(
-                        fontSize: 21.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Text(
-                      widget.currentMovie.movieDirector,
-                    ),
-                    Row(
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        IconButton(
-                          onPressed: () {
-                            final box = Hive.box<Movie>(dataBoxName);
-
-                            final Map<dynamic, Movie> deliveriesMap = box.toMap();
-                            dynamic desiredKey;
-                            deliveriesMap.forEach((key, value) {
-                              if (value.movieName == widget.currentMovie.movieName)
-                                desiredKey = key;
-                            });
-                            box.delete(desiredKey);
-                          },
-                          icon: Icon(Icons.delete),
+                        Container(
+                          width: MediaQuery.of(context).size.width*0.4,
+                          child: Text(
+                            widget.currentMovie.movieName,
+                            style: GoogleFonts.poppins(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white),
+                          ),
                         ),
-                        SizedBox(width: 10.0,),
-                        // IconButton(
-                        //   onPressed: () {
-                        //     final box = Hive.box<Movie>(dataBoxName);
-                        //
-                        //     final Map<dynamic, Movie> deliveriesMap = box.toMap();
-                        //     dynamic desiredKey;
-                        //     deliveriesMap.forEach((key, value) {
-                        //       if (value.movieName == widget.currentMovie.movieName)
-                        //         nameController.text = widget.currentMovie.movieName;
-                        //       directorController.text = widget.currentMovie.movieDirector;
-                        //       imagePath = widget.currentMovie.moviePosterImage;
-                        //       desiredKey = key;
-                        //     });
-                        //     box.delete(desiredKey);
-                        //     Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => AddOrEditNewMovie(title: nameController.text)));
-                        //   },
-                        //   icon: Icon(Icons.edit),
-                        // ),
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width*0.4,
+                          child: Text(
+                            widget.currentMovie.movieDirector,
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
+                    PopupMenuButton(
+                        itemBuilder: (context) => [
+                              PopupMenuItem(
+                                height: 20.0,
+                                child: TextButton(
+                                  onPressed: () {
+                                    final box = Hive.box<Movie>(dataBoxName);
+
+                                    final Map<dynamic, Movie> deliveriesMap =
+                                    box.toMap();
+                                    dynamic desiredKey;
+                                    deliveriesMap.forEach((key, value) {
+                                      if (value.movieName ==
+                                          widget.currentMovie.movieName)
+                                        desiredKey = key;
+                                    });
+                                    box.delete(desiredKey);
+                                    Navigator.pop(context);
+                                    final snackBar = SnackBar(content: Text('Deleted!' , style: TextStyle(color: Colors.white),) , duration: Duration(milliseconds: 3000),);
+                                    widget.getEditMovies();
+                                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                    scrollController.animateTo(
+                                        scrollController.position.minScrollExtent,
+                                        duration: const Duration(milliseconds: 500),
+                                        curve: Curves.easeOut);
+                                  },
+                                  child: Text(
+                                    'Delete',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                                value: 1,
+                              ),
+                              PopupMenuItem(
+                                height: 20.0,
+                                child: TextButton(
+                                  onPressed: () {
+                                    nameController.text = widget.currentMovie.movieName;
+                                    directorController.text = widget.currentMovie.movieDirector;
+                                    imageInitialValue.add(File(widget.currentMovie.moviePosterImage));
+                                    Navigator.pop(context);
+                                    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => AddOrEditNewMovie(title: widget.currentMovie.movieName , index: widget.index, getMovies: widget.getEditMovies,)));
+                                  },
+                                  child: Text(
+                                    'Edit',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                                value: 2,
+                              ),
+                            ],
+                      icon: Icon(Icons.more_vert , color: Colors.white,),
+                      color: Color(0xFF2d5287),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0)
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -104,10 +143,12 @@ class _MovieTileState extends State<MovieTile> {
             bottom: 20,
             child: Container(
               decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
                   image: DecorationImage(
-                image: FileImage(File(widget.currentMovie.moviePosterImage)),
-                fit: BoxFit.fill,
-              )),
+                    image:
+                        FileImage(File(widget.currentMovie.moviePosterImage)),
+                    fit: BoxFit.fill,
+                  )),
               width: 100.0,
               height: 150.0,
             ),
@@ -117,3 +158,5 @@ class _MovieTileState extends State<MovieTile> {
     );
   }
 }
+
+void showPopup() {}
