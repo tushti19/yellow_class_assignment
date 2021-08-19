@@ -4,6 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:yellow_class_assignment/screens/add_or_edit_movie.dart';
 import 'package:yellow_class_assignment/screens/movies_display_screen.dart';
+import 'package:yellow_class_assignment/screens/start_screen.dart';
 import 'package:yellow_class_assignment/storage/movie_store.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:yellow_class_assignment/widgets/infinite_scroll_view_movies.dart';
@@ -26,10 +27,10 @@ const FlexSchemeData customFlexScheme = FlexSchemeData(
   name: 'App Theme',
   description: 'Purple theme created from custom defined colors.',
   light: FlexSchemeColor(
-    primary: Color(0xFF041E42),
-    primaryVariant: Color(0xFF383285),
-    secondary: Color(0xFFAFEADC),
-    secondaryVariant: Color(0xFF8980EF),
+    primary: Color(0xFFA259FF),
+    primaryVariant: Color(0xFF6F12E7),
+    secondary: Color(0xFFCDFFB6),
+    secondaryVariant: Color(0xFF0BCE83),
     accentColor: Color(0xFFEFFFFA),
     error: Colors.redAccent,
   ),
@@ -77,10 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
-      body: MovieDisplayScreen(),
-    );
+    return Scaffold(body: StartScreen());
   }
 
   @override

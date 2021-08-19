@@ -20,14 +20,13 @@ class InfiniteScrollViewMovies extends StatefulWidget {
       _InfiniteScrollViewMoviesState();
 }
 
-
 class _InfiniteScrollViewMoviesState extends State<InfiniteScrollViewMovies> {
   final ScrollController scrollController = ScrollController();
   List<Movie?> movieItems = [];
   bool loading = false;
   bool allLoaded = false;
 
-  getEditedMovies(){
+  getEditedMovies() {
     movieItems = [];
     for (var movie in widget.moviesInStore.values) {
       movieItems.add(movie);
@@ -84,8 +83,15 @@ class _InfiniteScrollViewMoviesState extends State<InfiniteScrollViewMovies> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(
+              Icons.keyboard_arrow_left,
+              color: Colors.white,
+            )),
         title: Text(
           appTitle,
           style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
@@ -96,8 +102,10 @@ class _InfiniteScrollViewMoviesState extends State<InfiniteScrollViewMovies> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          AddOrEditNewMovie(title: 'Add new movie' , getMovies: getEditedMovies,)));
+                      builder: (BuildContext context) => AddOrEditNewMovie(
+                            title: 'Add new movie',
+                            getMovies: getEditedMovies,
+                          )));
             },
             icon: Icon(Icons.playlist_add),
             color: Colors.white,
@@ -128,7 +136,7 @@ class _InfiniteScrollViewMoviesState extends State<InfiniteScrollViewMovies> {
             ),
             if (loading) ...[
               Positioned(
-                left: MediaQuery.of(context).size.width*0.5 - 40,
+                left: MediaQuery.of(context).size.width * 0.5 - 40,
                 bottom: 0,
                 child: Center(
                   child: Container(

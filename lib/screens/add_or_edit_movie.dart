@@ -19,7 +19,8 @@ class AddOrEditNewMovie extends StatefulWidget {
   final String title;
   final int index;
   final Function() getMovies;
-  const AddOrEditNewMovie({Key? key, required this.title, this.index = 0 , required this.getMovies})
+  const AddOrEditNewMovie(
+      {Key? key, required this.title, this.index = 0, required this.getMovies})
       : super(key: key);
 
   @override
@@ -36,23 +37,21 @@ InputDecoration inputDecor(
     BuildContext context, String labelText, IconData icon) {
   return InputDecoration(
       prefixIcon: Icon(icon),
-      filled: true,
-      fillColor: Color(0xFF394e64),
-      enabledBorder: OutlineInputBorder(
+      enabledBorder: UnderlineInputBorder(
         borderSide: BorderSide(
-          color: Colors.grey.shade600,
+          color: Theme.of(context).primaryColor,
           width: 2.0,
         ),
       ),
-      focusedBorder: OutlineInputBorder(
+      focusedBorder: UnderlineInputBorder(
         borderSide: BorderSide(
-          color: Colors.white,
+          color: Theme.of(context).primaryColor,
           width: 2.0,
         ),
       ),
       labelText: labelText,
       labelStyle: TextStyle(
-        color: Colors.white,
+        color: Theme.of(context).primaryColor,
       ));
 }
 
@@ -64,18 +63,18 @@ class _AddOrEditNewMovieState extends State<AddOrEditNewMovie> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF041E42),
+      backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: Text(
           widget.title,
-          style: GoogleFonts.poppins(),
+          style: GoogleFonts.poppins(color: Colors.white),
         ),
         leading: IconButton(
           onPressed: () {
-            if(showSave){
+            if (showSave) {
               showCancelAlertBox(context);
-            }
-            else
+            } else
               Navigator.pop(context);
           },
           icon: Icon(
@@ -88,8 +87,8 @@ class _AddOrEditNewMovieState extends State<AddOrEditNewMovie> {
             IconButton(
               onPressed: () async {
                 _formKey.currentState!.save();
-                if(_formKey.currentState!.validate()){
-                if (widget.title.toLowerCase().contains("add")) {
+                if (_formKey.currentState!.validate()) {
+                  if (widget.title.toLowerCase().contains("add")) {
                     final File image =
                         _formKey.currentState!.value['Poster'][0];
                     String fileName = uuid.v4();
@@ -104,17 +103,23 @@ class _AddOrEditNewMovieState extends State<AddOrEditNewMovie> {
                     dataBox.add(movie);
                     showSave = false;
                     Navigator.pop(context);
-                    final snackBar = SnackBar(content: Text('Changes Saved!' , style: TextStyle(color: Colors.white),) , duration: Duration(milliseconds: 3000),);
+                    final snackBar = SnackBar(
+                      content: Text(
+                        'Changes Saved!',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      duration: Duration(milliseconds: 3000),
+                    );
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     widget.getMovies();
-                }
-                else {
+                  } else {
                     print(_formKey.currentState!.value);
 
-                    if(newImage){
+                    if (newImage) {
                       await deleteFile(imageInitialValue[0]);
 
-                      final File image = _formKey.currentState!.value['Poster'][0];
+                      final File image =
+                          _formKey.currentState!.value['Poster'][0];
 
                       String fileName = uuid.v4();
                       final path = await getApplicationDocumentsDirectory();
@@ -124,28 +129,36 @@ class _AddOrEditNewMovieState extends State<AddOrEditNewMovie> {
                           _formKey.currentState!.value['Name'],
                           _formKey.currentState!.value['Director'],
                           newPath.toString());
-                      dataBox.putAt(widget.index , movie);
-                    }
-                    else{
+                      dataBox.putAt(widget.index, movie);
+                    } else {
                       Movie movie = new Movie(
                           _formKey.currentState!.value['Name'],
                           _formKey.currentState!.value['Director'],
                           dataBox.getAt(widget.index).moviePosterImage);
-                      dataBox.putAt(widget.index , movie);
+                      dataBox.putAt(widget.index, movie);
                     }
                     showSave = false;
                     Navigator.pop(context);
-                    final snackBar = SnackBar(content: Text('Changes Saved!' , style: TextStyle(color: Colors.white),) , duration: Duration(milliseconds: 3000),);
+                    final snackBar = SnackBar(
+                      content: Text(
+                        'Changes Saved!',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      duration: Duration(milliseconds: 3000),
+                    );
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     widget.getMovies();
                   }
-                }
-                else{
-                  final snackBar = SnackBar(content: Text('All fields are required' , style: TextStyle(color: Colors.white),) , duration: Duration(milliseconds: 3000),);
+                } else {
+                  final snackBar = SnackBar(
+                    content: Text(
+                      'All fields are required',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    duration: Duration(milliseconds: 3000),
+                  );
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
-
-
               },
               icon: Icon(
                 Icons.check,
@@ -154,136 +167,156 @@ class _AddOrEditNewMovieState extends State<AddOrEditNewMovie> {
             )
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              FormBuilder(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    FormBuilderTextField(
-                      name: 'Name',
-                      controller: nameController,
-                      decoration: inputDecor(context, 'Name', Icons.movie),
-                      onChanged: (val) {
-                        setState(() {
-                          showSave = true;
-                        });
-                      },
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(context),
-                        FormBuilderValidators.max(context, 70),
-                      ]),
-                      keyboardType: TextInputType.text,
-                    ),
-                    SizedBox(
-                      height: 20.0,
-                    ),
-                    FormBuilderTextField(
-                      name: 'Director',
-                      controller: directorController,
-                      decoration: inputDecor(context, 'Director', Icons.person),
-                      onChanged: (val) {
-                        setState(() {
-                          showSave = true;
-                        });
-                      },
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                      validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(context),
-                        FormBuilderValidators.max(context, 70),
-                      ]),
-                      keyboardType: TextInputType.text,
-                    ),
-                    SizedBox(
-                      height: 20.0,
-                    ),
-                    Center(
-                      child: FormBuilderImagePicker(
-                        validator: FormBuilderValidators.compose([
-                          FormBuilderValidators.required(context),
-                        ]),
-                        name: 'Poster',
-                        iconColor: Colors.white,
-                        initialValue: imageInitialValue,
-                        galleryIcon: Icon(
-                          Icons.image,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        cameraIcon: Icon(
-                          Icons.camera,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        cameraLabel: Text(
-                          'Camera',
-                          style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                        galleryLabel: Text(
-                          'Gallery',
-                          style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                        maxWidth: MediaQuery.of(context).size.width * 0.5,
-                        maxHeight: MediaQuery.of(context).size.height * 0.3,
-                        previewMargin: EdgeInsets.only(
-                            left:
-                                MediaQuery.of(context).size.width * 0.25 - 16),
-                        previewWidth: MediaQuery.of(context).size.width * 0.5,
-                        previewHeight: MediaQuery.of(context).size.height * 0.3,
-                        onImage: (image) {
-                          setState(() {
-                            newImage = true;
-                            showSave = true;
-                          });
-                        },
-                        onChanged: (image){
-                          setState(() {
-                            newImage = true;
-                            showSave = true;
-                          });
-                        },
-                        decoration: InputDecoration(
-                            filled: true,
-                            fillColor:
-                                Theme.of(context).primaryColor.withOpacity(0.1),
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.grey,
-                                width: 2.0,
-                              ),
-                            ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.white,
-                                width: 2.0,
-                              ),
-                            ),
-                            labelText: 'Pick a Poster',
-                            labelStyle:
-                                TextStyle(color: Colors.white, fontSize: 21)),
-                        maxImages: 1,
-                      ),
-                    ),
-                  ],
-                ),
+      body: Stack(
+        children: [
+          Positioned(
+            right: 0,
+            top: 0,
+            child: Container(
+              child: Image(
+                image: AssetImage("assets/images/BG.png"),
               ),
-            ],
+            ),
           ),
-        ),
+          Positioned(
+            left: 0,
+            bottom: 0,
+            child: Container(
+              child: Image(
+                image: AssetImage("assets/images/newBG.png"),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: ListView(
+              children: [
+                Container(
+                  margin: EdgeInsets.only(top: MediaQuery.of(context).size.height*0.2),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(52.0),
+                      color: Colors.white),
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(20.0),
+                        child: FormBuilder(
+                          key: _formKey,
+                          child: Column(
+                            //mainAxisSize: MainAxisSize.min,
+                            children: [
+                              FormBuilderTextField(
+                                name: 'Name',
+                                controller: nameController,
+                                decoration:
+                                    inputDecor(context, 'Name', Icons.movie),
+                                onChanged: (val) {
+                                  setState(() {
+                                    showSave = true;
+                                  });
+                                },
+                                style: TextStyle(
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                                validator: FormBuilderValidators.compose([
+                                  FormBuilderValidators.required(context),
+                                  FormBuilderValidators.max(context, 70),
+                                ]),
+                                keyboardType: TextInputType.text,
+                              ),
+                              SizedBox(
+                                height: 20.0,
+                              ),
+                              FormBuilderTextField(
+                                name: 'Director',
+                                controller: directorController,
+                                decoration: inputDecor(
+                                    context, 'Director', Icons.person),
+                                onChanged: (val) {
+                                  setState(() {
+                                    showSave = true;
+                                  });
+                                },
+                                style: TextStyle(
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                                validator: FormBuilderValidators.compose([
+                                  FormBuilderValidators.required(context),
+                                  FormBuilderValidators.max(context, 70),
+                                ]),
+                                keyboardType: TextInputType.text,
+                              ),
+                              SizedBox(
+                                height: 20.0,
+                              ),
+                              Center(
+                                child: FormBuilderImagePicker(
+                                  validator: FormBuilderValidators.compose([
+                                    FormBuilderValidators.required(context),
+                                  ]),
+                                  name: 'Poster',
+                                  iconColor: Theme.of(context).primaryColor,
+                                  initialValue: imageInitialValue,
+                                  galleryIcon: Icon(
+                                    Icons.image,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                  cameraIcon: Icon(
+                                    Icons.camera,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                  cameraLabel: Text(
+                                    'Camera',
+                                    style: TextStyle(
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                  ),
+                                  galleryLabel: Text(
+                                    'Gallery',
+                                    style: TextStyle(
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                  ),
+                                  previewMargin: EdgeInsets.only(
+                                      left: MediaQuery.of(context).size.width *
+                                              0.25 -
+                                          16),
+                                  onImage: (image) {
+                                    setState(() {
+                                      newImage = true;
+                                      showSave = true;
+                                    });
+                                  },
+                                  onChanged: (image) {
+                                    setState(() {
+                                      newImage = true;
+                                      showSave = true;
+                                    });
+                                  },
+                                  decoration: InputDecoration(
+                                      enabledBorder: InputBorder.none,
+                                      focusedBorder: InputBorder.none,
+                                      labelText: 'Pick a Poster',
+                                      labelStyle: TextStyle(
+                                          color: Theme.of(context).primaryColor,
+                                          fontSize: 21)),
+                                  maxImages: 1,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
-
 
   @override
   void dispose() {

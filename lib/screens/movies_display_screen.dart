@@ -28,26 +28,34 @@ class _MovieDisplayScreenState extends State<MovieDisplayScreen> {
         List<int> keys = items.keys.cast<int>().toList();
         if (items.values.isEmpty)
           return Scaffold(
-            backgroundColor: Theme.of(context).primaryColor,
             appBar: AppBar(
               title: Text(
                 appTitle,
                 style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
               ),
+              leading:
+                IconButton(onPressed: (){Navigator.pop(context);}, icon: Icon(Icons.keyboard_arrow_left)),
             ),
             body: Container(
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    Container(
+                      height: MediaQuery.of(context).size.height*0.4,
+                      width: MediaQuery.of(context).size.height*0.4,
+                      child: Image(
+                        image: AssetImage('assets/images/no_data.png'),
+                      ),
+                    ),
                     Text(
                       'No movies added',
-                      style: TextStyle(color: Colors.grey.shade400),
+                      style: TextStyle(color: Colors.black , fontSize: 25.0),
                     ),
                     SizedBox(
                       height: 5.0,
                     ),
-                    TextButton(
+                    ElevatedButton(
                       onPressed: () {
                         Navigator.push(
                             context,
@@ -62,6 +70,7 @@ class _MovieDisplayScreenState extends State<MovieDisplayScreen> {
                         'Add a new movie',
                         style: GoogleFonts.poppins(
                           color: Colors.white,
+                          fontWeight: FontWeight.w600
                         ),
                       ),
                     )
